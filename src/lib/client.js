@@ -10,9 +10,9 @@ import querystring from 'querystring';
 
 export default class Client {
 
-    constructor(rootUrl, field) {
+    constructor(rootUrl, fdUrl) {
         this.root = rootUrl;
-        this.field = field;
+        this.fdUrl = fdUrl;
         axios.defaults.withCredentials = true;
         axios.defaults.baseURL = this.root;
     }
@@ -29,7 +29,7 @@ export default class Client {
     }
 
     getTickets(fdeskId) {
-        return axios.get(`/rest/issue?filter=${this.field}: ${fdeskId}`);
+        return axios.get(`/rest/issue?filter="${this.fdUrl}${fdeskId}"`);
     }
 
     getUrlForIssue(id) {
@@ -65,7 +65,7 @@ export default class Client {
 
     linkTicket(issueId, fdeskId) {
         return axios.post(`/rest/issue/${issueId}/execute`, querystring.stringify({
-            command: `${this.field} ${fdeskId}`
+            comment: `${this.fdUrl}${fdeskId}`
         }))
     }
 }

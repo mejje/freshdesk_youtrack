@@ -47,7 +47,7 @@ class LinkForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            issue: null,
+            issue: '',
             fail: false
         }
     }
@@ -115,7 +115,7 @@ export default class IssueOverview extends React.Component {
             loading: true,
             loggedIn: false,
             issues: [],
-            client: new Client(this.props.rootUrl, this.props.fdeskField)
+            client: new Client(this.props.rootUrl, this.props.fdeskUrl)
         }
     }
 
