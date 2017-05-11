@@ -55,7 +55,7 @@ class LinkForm extends React.Component {
     render() {
         return <span>
             {this.state.fail && <span style={{ color: '#b71c1c' }}>Invalid ID</span>}
-            <input type="text" style={{ marginLeft: '10px', marginTop: '10px', marginBottom: '10px' }} value={this.state.issue} onChange={(e) => { this.setState({ issue: e.target.value }) }} />
+            <input type="text" style={{ width: '80px', marginLeft: '10px', marginTop: '10px', marginBottom: '10px' }} value={this.state.issue} onChange={(e) => { this.setState({ issue: e.target.value }) }} />
             <button className="button primary" style={{ marginTop: '10px' }} onClick={this.onLink.bind(this)}>Link Issue</button>
         </span>
     }
