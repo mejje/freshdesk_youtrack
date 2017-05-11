@@ -32,7 +32,6 @@ class IssueList extends React.Component {
     }
 }
 
-
 class CreateIssueButton extends React.Component {
 
     render() {
@@ -44,6 +43,34 @@ class CreateIssueButton extends React.Component {
     }
 }
 
+class LinkForm extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            issue: null,
+            fail: false
+        }
+    }
+
+    render() {
+        return <span>
+            {this.state.fail && <span style={{ color: '#b71c1c' }}>Invalid ID</span>}
+            <input type="text" style={{ marginLeft: '10px' }} value={this.state.issue} onChange={(e) => { this.setState({ issue: e.target.value }) }} />
+            <button className="button primary" onClick={this.onLink.bind(this)}>Link Issue</button>
+        </span>
+    }
+
+    onLink() {
+        this.props.client.linkTicket(this.state.issue, this.props.ticketId).then((result) => {
+            console.info(result);
+            this.setState({ fail: false, issue: null });
+            this.props.onSuccess();
+        }).catch((err) => {
+            this.setState({ fail: true });
+            console.warn(err);
+        })
+    }
+}
 
 class LoginForm extends React.Component {
 
@@ -163,6 +190,10 @@ export default class IssueOverview extends React.Component {
                     <div>
                         <IssueList issues={this.state.issues} client={this.state.client}/>
                         <CreateIssueButton style={{ marginTop: '10px'}} onCreateIssue={() => {this.setState({editOpen: true})}} />
+                        <LinkForm
+                            client={this.state.client}
+                            ticketId={this.props.ticketId}
+                            onSuccess={this.refreshTickets.bind(this)} />
                         <IssueEditor
                             open={this.state.editOpen}
                             client={this.state.client}
@@ -179,20 +210,22 @@ export default class IssueOverview extends React.Component {
 
     onLoggedIn() {
         this.setState({
-            loggedIn: true,
-            loading: true
+            loggedIn: true
         });
-        this.state.client.getTickets(this.props.ticketId).then((result) => {
-            this.setState({
-                loading: false,
-                issues: this._parseIssues(result.data.issue)
-            });
-        })
+
+        this.refreshTickets();
     }
 
     onTicketSubmitSuccess() {
         this.setState({
             editOpen: false,
+        });
+
+        this.refreshTickets();
+    }
+
+    refreshTickets() {
+        this.setState({
             loading: true
         });
 

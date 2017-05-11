@@ -59,9 +59,13 @@ export default class Client {
             let issueId = split[split.length-1];
 
             // Apply command to link to freshdesk
-            return axios.post(`/rest/issue/${issueId}/execute`, querystring.stringify({
-                command: `${this.field} ${fdeskId}`
-            }))
+            return linkTicket(issueId, fdeskId);
         })
+    }
+
+    linkTicket(issueId, fdeskId) {
+        return axios.post(`/rest/issue/${issueId}/execute`, querystring.stringify({
+            command: `${this.field} ${fdeskId}`
+        }))
     }
 }

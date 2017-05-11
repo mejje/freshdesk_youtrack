@@ -14,7 +14,8 @@
     "querystring": "^0.2.0",
     "react": "^15.0.1",
     "react-dom": "^15.0.1",
-    "url-loader": "^0.5.7"
+    "url-loader": "^0.5.7",
+    "axios": "^0.16.1"
   },
   "devDependencies": {
     "extract-text-webpack-plugin": "^1.0.1",
