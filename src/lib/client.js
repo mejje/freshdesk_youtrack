@@ -10,9 +10,10 @@ import querystring from 'querystring';
 
 export default class Client {
 
-    constructor(rootUrl, fdUrl) {
+    constructor(rootUrl, fdeskUrl, fdeskProductField) {
         this.root = rootUrl;
-        this.fdUrl = fdUrl;
+        this.fdeskUrl = fdeskUrl;
+        this.fdeskProductField = fdeskProductField;
         axios.defaults.withCredentials = true;
         axios.defaults.baseURL = this.root;
     }
@@ -29,7 +30,7 @@ export default class Client {
     }
 
     getTickets(fdeskId) {
-        return axios.get(`/rest/issue?filter="${this.fdUrl}${fdeskId}"`);
+        return axios.get(`/rest/issue?filter="${this.fdeskUrl}${fdeskId}"`);
     }
 
     getUrlForIssue(id) {
@@ -40,11 +41,15 @@ export default class Client {
         return axios.get('/rest/project/all');
     }
 
+    getProducts(project) {
+        return axios.get(`/rest/issue/intellisense?project=${project}&filter=${this.fdeskProductField}:&optionsLimit=100`);
+    }
+
     getUser() {
         return axios.get('/rest/user/current');
     }
 
-    createTicket(project, summary, description, fdeskId) {
+    createTicket(project, product, summary, description, fdeskId) {
         // Create the issue first
         return axios.put('/rest/issue', querystring.stringify({
             project: project,
@@ -59,13 +64,18 @@ export default class Client {
             let issueId = split[split.length-1];
 
             // Apply command to link to freshdesk
-            return linkTicket(issueId, fdeskId);
+            let query = {
+                comment: `${this.fdeskUrl}${fdeskId}`
+            };
+            if (product != null && product != ' -- None --')
+                query.command = `${this.fdeskProductField} ${product}`;
+            return axios.post(`/rest/issue/${issueId}/execute`, querystring.stringify(query));
         })
     }
 
     linkTicket(issueId, fdeskId) {
         return axios.post(`/rest/issue/${issueId}/execute`, querystring.stringify({
-            comment: `${this.fdUrl}${fdeskId}`
+            comment: `${this.fdeskUrl}${fdeskId}`
         }))
     }
 }

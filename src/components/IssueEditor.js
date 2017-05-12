@@ -17,10 +17,12 @@ class IssueEditor extends React.Component {
         super(props);
         this.state = {
             projects: [],
+            products: [],
             busy: true,
             submitting: false,
             user: {fullName: null, login: null},
             project: null,
+            product: null,
             summary: null,
             description: null,
             error: null
@@ -30,6 +32,7 @@ class IssueEditor extends React.Component {
     componentDidMount() {
         this.props.client.getProjects().then((result) => {
             this.setState({projects: [{shortName: '--none--', name: ' -- None --'}].concat(result.data)});
+            this.setState({ products: [{ option: ' -- None --' }] });
             return this.props.client.getUser();
         }).then((result) => {
             this.setState({busy: false, user: {fullName: result.data.fullName, login: result.data.login}});
@@ -85,11 +88,17 @@ class IssueEditor extends React.Component {
                             </div>
                             
                             <label for="project">Project</label>
-                            <select name="project" onChange={(e) => {this.setState({project: e.target.value})}}>
+                            <select name="project" onChange={this.onProjectChange.bind(this)}>
                                 {this.state.projects.map((el, idx) => (
                                     <option key={idx} value={el.shortName}>{el.name}</option>
                                 ))}
+                            </select>
 
+                            <label for="product">Product</label>
+                            <select name="product" onChange={(e) => { this.setState({ product: e.target.value }) }}>
+                                {this.state.products.map((el, idx) => (
+                                    <option key={idx} value={el.option}>{el.option}</option>
+                                ))}
                             </select>
 
                             <br />
@@ -113,6 +122,13 @@ class IssueEditor extends React.Component {
         </div>
     }
 
+    onProjectChange(event) {
+        this.setState({ project: event.target.value })
+        this.props.client.getProducts(event.target.value).then((result) => {
+            this.setState({ products: [{ option: ' -- None --' }].concat(result.data.suggest.slice(1)) });
+        });
+    }
+
     onSubmitTicket(event) {
         event.preventDefault();
 
@@ -123,12 +139,11 @@ class IssueEditor extends React.Component {
 
         this.setState({submitting: true});
 
-        this.props.client.createTicket(this.state.project, this.state.summary, this.state.description, this.props.ticketId).then((result) => {
+        this.props.client.createTicket(this.state.project, this.state.product, this.state.summary, this.state.description, this.props.ticketId).then((result) => {
             this.props.onSuccess();
         }).catch((err) => {
-            this.setState({error: `Cannot Submit Ticket: ${err.data.value}`, submitting: false})
+            this.setState({error: `Cannot Submit Ticket: ${err.response.data.value}`, submitting: false})
         });
-        console.info(this.state.project);
     }
 }
 

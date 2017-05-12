@@ -115,7 +115,7 @@ export default class IssueOverview extends React.Component {
             loading: true,
             loggedIn: false,
             issues: [],
-            client: new Client(this.props.rootUrl, this.props.fdeskUrl)
+            client: new Client(this.props.rootUrl, this.props.fdeskUrl, this.props.fdeskProductField)
         }
     }
 
@@ -159,12 +159,12 @@ export default class IssueOverview extends React.Component {
                 error: null,
                 loggedIn: true
             };
-            if (err.status == 401) {
+            if (err.response.status == 401) {
                 // user needs to login
                 newState.loggedIn = false
             } else {
                 try {
-                    newState.error = err.data.value
+                    newState.error = err.response.data.value
                 } catch(next) {
                     console.warn(err);
                 }
