@@ -59,7 +59,7 @@ class IssueEditor extends React.Component {
             position: 'absolute',
             backgroundColor: '#fff',
             width: '800px',
-            height: '400px',
+            height: '500px',
             top: '50%',
             left: '50%',
             marginLeft: '-400px',
